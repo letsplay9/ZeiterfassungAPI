@@ -1,0 +1,10 @@
+{
+  "name": "angular-client",
+  "version": "0.1.0",
+  "scripts": {
+    "generate:api": "openapi-generator-cli generate -i ../openapi/openapi.yaml -g typescript-angular -o src/api --additional-properties=ngVersion=16.0.0,useRxJS6=true"
+  },
+  "devDependencies": {
+    "@openapitools/openapi-generator-cli": "^2.3.4"
+  }
+}

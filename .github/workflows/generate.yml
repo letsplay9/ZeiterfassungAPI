@@ -1,0 +1,35 @@
+name: Generate API code
+
+on:
+  push:
+    paths:
+      - 'openapi/**'
+      - 'quarkus-server/**'
+      - 'angular-client/**'
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Generate Quarkus Server Stub
+        run: |
+          cd quarkus-server
+          mvn clean generate-sources
+
+      - name: Generate Angular Client
+        run: |
+          cd angular-client
+          npm ci
+          npm run generate:api
+
+      - name: Commit generated code
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add quarkus-server/target/generated-sources openapi
+          git add angular-client/src/api
+          git commit -m "chore: regenerate API code" || echo "No changes to commit"
+          git push
