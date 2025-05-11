@@ -1,17 +1,15 @@
-openapi: 3.0.1
+openapi: 3.0.3
 info:
-  title: Example API
+  title: Hello API
   version: 1.0.0
-servers:
-  - url: http://localhost:8080/api
 paths:
   /hello:
     get:
-      summary: Greet
-      operationId: getHello
+      summary: Greet the user
+      operationId: sayHello
       responses:
         '200':
-          description: Successful response
+          description: Successful greeting
           content:
             application/json:
               schema:
@@ -19,10 +17,4 @@ paths:
                 properties:
                   message:
                     type: string
-components:
-  schemas:
-    HelloResponse:
-      type: object
-      properties:
-        message:
-          type: string
+                    example: Hello, World!

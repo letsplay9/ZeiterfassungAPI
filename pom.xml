@@ -1,23 +1,24 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+                             https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.example</groupId>
-    <artifactId>api-mono</artifactId>
+    <artifactId>monorepo</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
+    <properties>
+        <!-- Aktuelle Quarkus Platform BOM Version -->
+        <quarkus.platform.version>3.22.2</quarkus.platform.version> <!-- :contentReference[oaicite:0]{index=0} -->
+        <!-- Empfohlene Java Version für Quarkus -->
+        <java.version>17</java.version>                                 <!-- :contentReference[oaicite:1]{index=1} -->
+        <!-- OpenAPI Generator Plugin Version -->
+        <openapi.generator.version>7.13.0</openapi.generator.version> <!-- :contentReference[oaicite:2]{index=2} -->
+    </properties>
+
     <modules>
         <module>quarkus-server</module>
-        <module>angular-client</module>
     </modules>
-
-    <properties>
-        <openapi.spec.dir>${project.basedir}/openapi</openapi.spec.dir>
-        <openapi.generator.version>7.0.1</openapi.generator.version>
-        <quarkus.platform.version>3.0.0.Final</quarkus.platform.version>
-        <java.version>17</java.version>
-    </properties>
 </project>

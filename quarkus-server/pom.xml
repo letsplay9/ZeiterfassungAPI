@@ -1,62 +1,109 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+                             https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>com.example</groupId>
-        <artifactId>api-mono</artifactId>
+        <artifactId>monorepo</artifactId>
         <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
 
     <artifactId>quarkus-server</artifactId>
     <packaging>jar</packaging>
 
-    <properties>
-        <quarkus.platform.version>${quarkus.platform.version}</quarkus.platform.version>
-        <java.version>${java.version}</java.version>
-    </properties>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.quarkus.platform</groupId>
+                <artifactId>quarkus-bom</artifactId>
+                <version>${quarkus.platform.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
+        <!-- RESTEasy Reactive für JAX-RS -->
         <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-resteasy</artifactId>
+            <groupId>io.quarkus.resteasy.reactive</groupId>
+            <artifactId>resteasy-reactive</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus.resteasy.reactive</groupId>
+            <artifactId>resteasy-reactive-jackson</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-resteasy-jackson</artifactId>
+            <artifactId>quarkus-hibernate-validator</artifactId>
         </dependency>
-        <!-- Generated sources will be added automatically -->
+
+        <!-- MicroProfile OpenAPI (mp.openapi annotations + Swagger UI) -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-smallrye-openapi</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
-            <!-- OpenAPI Generator -->
+            <!-- OpenAPI Generator Plugin -->
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
                 <version>${openapi.generator.version}</version>
                 <executions>
                     <execution>
-                        <id>generate-quarkus-server</id>
+                        <id>generate-server-stub</id>
                         <goals>
                             <goal>generate</goal>
                         </goals>
+                        <phase>generate-sources</phase>
                         <configuration>
-                            <inputSpec>${project.parent.basedir}/openapi/openapi.yaml</inputSpec>
-                            <generatorName>quarkus</generatorName>
+                            <inputSpec>${project.basedir}/../openapi/openapi.yaml</inputSpec>
+                            <generatorName>jaxrs-spec</generatorName>
+                            <library>quarkus</library>
                             <output>${project.build.directory}/generated-sources/openapi</output>
-                            <apiPackage>com.example.api</apiPackage>
-                            <modelPackage>com.example.model</modelPackage>
                             <configOptions>
-                                <dateLibrary>java8</dateLibrary>
+                                <!-- auf Jakarta EE Namespaces umstellen -->
+                                <useJakartaEe>true</useJakartaEe>
+                                <!-- Bean Validation Annotationen (jakarta.validation) -->
+                                <useBeanValidation>true</useBeanValidation>
+                                <!-- MicroProfile OpenAPI Annotations -->
+                                <useMicroProfileOpenAPIAnnotations>true</useMicroProfileOpenAPIAnnotations>
+                                <!-- Swagger-Klassen nicht mehr generieren -->
+                                <useSwaggerAnnotations>false</useSwaggerAnnotations>
                             </configOptions>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
 
-            <!-- Quarkus Maven Plugin -->
+            <!-- Damit Maven die generierten Quellen findet -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <id>add-generated-sources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/generated-sources/openapi</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Quarkus Build Plugin -->
             <plugin>
                 <groupId>io.quarkus</groupId>
                 <artifactId>quarkus-maven-plugin</artifactId>
@@ -65,20 +112,10 @@
                     <execution>
                         <goals>
                             <goal>build</goal>
-                            <goal>dev</goal>
                         </goals>
                     </execution>
                 </executions>
             </plugin>
         </plugins>
     </build>
-
-    <profiles>
-        <profile>
-            <id>generate-sources</id>
-            <build>
-                <defaultGoal>generate-sources</defaultGoal>
-            </build>
-        </profile>
-    </profiles>
 </project>
