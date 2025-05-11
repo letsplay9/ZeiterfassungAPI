@@ -1,9 +1,33 @@
-<project>
-    …
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>com.example</groupId>
+        <artifactId>api-mono</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>quarkus-server</artifactId>
+    <packaging>jar</packaging>
+
     <properties>
-        <quarkus.platform.version>3.0.0.Final</quarkus.platform.version>
-        <java.version>17</java.version>
+        <quarkus.platform.version>${quarkus.platform.version}</quarkus.platform.version>
+        <java.version>${java.version}</java.version>
     </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-resteasy</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-resteasy-jackson</artifactId>
+        </dependency>
+        <!-- Generated sources will be added automatically -->
+    </dependencies>
 
     <build>
         <plugins>
@@ -31,6 +55,7 @@
                     </execution>
                 </executions>
             </plugin>
+
             <!-- Quarkus Maven Plugin -->
             <plugin>
                 <groupId>io.quarkus</groupId>
@@ -48,14 +73,12 @@
         </plugins>
     </build>
 
-    <dependencies>
-        <!-- … weitere Quarkus-Dependencies … -->
-        <!-- Generated-Sources als Dependency -->
-        <dependency>
-            <groupId>com.example</groupId>
-            <artifactId>quarkus-server</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
-    </dependencies>
+    <profiles>
+        <profile>
+            <id>generate-sources</id>
+            <build>
+                <defaultGoal>generate-sources</defaultGoal>
+            </build>
+        </profile>
+    </profiles>
 </project>
