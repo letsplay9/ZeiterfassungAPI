@@ -4,18 +4,15 @@
                              https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.example</groupId>
-    <artifactId>monorepo</artifactId>
+    <groupId>de.franz.zeiterfassung</groupId>
+    <artifactId>fe-be-api</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>
-        <!-- Aktuelle Quarkus Platform BOM Version -->
-        <quarkus.platform.version>3.22.2</quarkus.platform.version> <!-- :contentReference[oaicite:0]{index=0} -->
-        <!-- Empfohlene Java Version für Quarkus -->
-        <java.version>17</java.version>                                 <!-- :contentReference[oaicite:1]{index=1} -->
-        <!-- OpenAPI Generator Plugin Version -->
-        <openapi.generator.version>7.13.0</openapi.generator.version> <!-- :contentReference[oaicite:2]{index=2} -->
+        <quarkus.platform.version>3.22.2</quarkus.platform.version>
+        <java.version>17</java.version>
+        <openapi.generator.version>7.13.0</openapi.generator.version>
     </properties>
 
     <modules>

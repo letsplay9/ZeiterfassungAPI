@@ -4,6 +4,7 @@ name: Generate API Stubs & Clients
 on:
   push:
     paths:
+      - 'main'
       - 'openapi/**'
       - 'quarkus-server/**'
       - 'angular-client/**'
