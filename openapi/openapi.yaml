@@ -1,20 +1,296 @@
+
 openapi: 3.0.3
 info:
-  title: Hello API
+  title: Zeiterfassungs-API
+  description: REST API zur Verwaltung von Nutzern, Tagen und Buchungen in einer Zeiterfassungsanwendung
   version: 1.0.0
+servers:
+  - url: http://localhost:8080/api
+tags:
+  - name: userverwaltung
+    description: Schnittstellen für Nutzerverwaltung
+    externalDocs:
+      url: http://docs.my-api.com/pet-operations.htm
+  - name: buchungen
+    description: Schnittstellen für Tages- und Buchungsinformationen
+    externalDocs:
+      url: http://docs.my-api.com/store-orders.htm
+
 paths:
-  /hello:
+  /users:
     get:
-      summary: Greet the user
-      operationId: sayHello
+      summary: Alle Nutzer abrufen
+      tags:
+        - userverwaltung
       responses:
         '200':
-          description: Successful greeting
+          description: Liste der Nutzer
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: Hello, World!
+                $ref: '#/components/schemas/UserList'
+    post:
+      summary: Neuen Nutzer erstellen
+      tags:
+        - userverwaltung
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          description: Nutzer erstellt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /users/{userId}:
+    get:
+      summary: Einzelnen Nutzer abrufen
+      tags:
+        - userverwaltung
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Nutzer-Details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    patch:
+      summary: Nutzer bearbeiten
+      tags:
+        - userverwaltung
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: Nutzer aktualisiert
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    delete:
+      summary: Nutzer löschen
+      tags:
+        - userverwaltung
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Nutzer gelöscht
+
+  /users/{userId}/tage:
+    get:
+      summary: Alle Tage eines Nutzers abrufen
+      tags:
+        - buchungen
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Liste der Tage
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TagList'
+    post:
+      summary: Neuen Tag für Nutzer erstellen
+      tags:
+        - buchungen
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tag'
+      responses:
+        '201':
+          description: Tag erstellt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+
+  /tage/{tagId}/buchungen:
+    get:
+      summary: Alle Buchungen eines Tages abrufen
+      tags:
+        - buchungen
+      parameters:
+        - name: tagId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Liste der Buchungen
+    post:
+      summary: Neue Buchung zum Tag hinzufügen
+      tags:
+        - buchungen
+      parameters:
+        - name: tagId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Buchung'
+      responses:
+        '201':
+          description: Buchung erstellt
+
+  /buchungen/{buchungId}:
+    delete:
+      summary: Buchung löschen
+      tags:
+        - buchungen
+      parameters:
+        - name: buchungId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Buchung gelöscht
+    patch:
+      summary: Buchung aktualisieren
+      tags:
+        - buchungen
+      parameters:
+        - name: buchungId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Buchung'
+      responses:
+        '200':
+          description: Buchung aktualisiert
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Buchung'
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        aktiv:
+          type: boolean
+        erstellt_am:
+          type: string
+          format: date-time
+
+    UserList:
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+
+    Tag:
+      type: object
+      properties:
+        id:
+          type: string
+        user_id:
+          type: string
+        datum:
+          type: string
+          format: date
+        abgeschlossen:
+          type: boolean
+        soll_zeit:
+          type: integer
+        hybrid_zeit:
+          type: integer
+        max_zeit:
+          type: integer
+        ist_zeit:
+          type: integer
+        pause_zeit:
+          type: integer
+
+    TagList:
+      type: object
+      properties:
+        tage:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+
+    Buchung:
+      type: object
+      properties:
+        id:
+          type: string
+        tag_id:
+          type: string
+        uhrzeit:
+          type: integer
+        art:
+          type: string
+          enum: [kommen, gehen]
+        quelle:
+          type: string
+        validiert:
+          type: boolean
+
+    BuchungList:
+      type: object
+      properties:
+        buchungen:
+          type: array
+          items:
+            $ref: '#/components/schemas/Buchung'
+
+        erstellt_am:
+          type: string
+          format: date-time
