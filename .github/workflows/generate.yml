@@ -17,8 +17,8 @@ jobs:
         run: npm install @openapitools/openapi-generator-cli -g
       - name: Generate Quarkus server and Angular client
         run: |
-          openapi-generator-cli generate -i openapi.yml -g java --library quarkus -o quarkus-server
-          openapi-generator-cli generate -i openapi.yml -g typescript-angular -o angular-client
+          openapi-generator-cli generate -i openapi.yaml -g java --library quarkus -o quarkus-server
+          openapi-generator-cli generate -i openapi.yaml -g typescript-angular -o angular-client
   publish-java:
     needs: generate
     runs-on: ubuntu-latest
