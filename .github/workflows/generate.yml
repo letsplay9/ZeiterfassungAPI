@@ -9,6 +9,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+      - name: Setup Node.js (for OpenAPI Generator CLI)
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install OpenAPI Generator CLI
+        run: npm install @openapitools/openapi-generator-cli -g
       - name: Generate Quarkus server and Angular client
         run: |
           openapi-generator-cli generate -i openapi.yml -g java --library quarkus -o quarkus-server
@@ -36,7 +42,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - name: Setup Node.js
+      - name: Setup Node.js for npm publish
         uses: actions/setup-node@v3
         with:
           node-version: '18'
