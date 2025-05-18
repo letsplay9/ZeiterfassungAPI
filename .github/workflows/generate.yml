@@ -3,58 +3,78 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'openapi/**'
+      - 'quarkus-server/**'
+      - 'angular-client/**'
 jobs:
   generate:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - name: Setup Node.js (for OpenAPI Generator CLI)
+        with:
+          persist-credentials: true
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Generate Quarkus Server Stub
+        working-directory: quarkus-server
+        run: mvn clean compile -DskipTests
+
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-      - name: Install OpenAPI Generator CLI
-        run: npm install @openapitools/openapi-generator-cli -g
-      - name: Generate Quarkus server and Angular client
-        run: |
-          # Determine OpenAPI spec file in openapi/ directory
-          if [ -f openapi/openapi.yml ]; then SPEC=openapi/openapi.yml; \
-          elif [ -f openapi/openapi.yaml ]; then SPEC=openapi/openapi.yaml; \
-          else echo "Spec file not found in openapi/ directory"; exit 1; fi
-          echo "Using spec file: $SPEC"
-          # Use the dedicated Java Quarkus generator
-          openapi-generator-cli generate -i "$SPEC" -g java-quarkus -o quarkus-server
-          openapi-generator-cli generate -i "$SPEC" -g typescript-angular -o angular-client
+
+      - name: Install Angular Client Dependencies
+        working-directory: angular-client
+        run: npm ci
+
+      - name: Generate Angular API Client
+        working-directory: angular-client
+        run: npm run generate:api
+
   publish-java:
     needs: generate
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - name: Setup Java
+
+      - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
-          distribution: temurin
+          distribution: 'temurin'
           java-version: '17'
           server-id: github
           server-username: ${{ github.actor }}
           server-password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Deploy Quarkus server to GitHub Packages
         working-directory: quarkus-server
         run: mvn deploy -DskipTests
+
   publish-node:
     needs: generate
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - name: Setup Node.js for npm publish
+
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
           registry-url: 'https://npm.pkg.github.com'
-      - name: Configure npm auth
+
+      - name: Configure npm authentication
         run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" > ~/.npmrc
+
       - name: Publish Angular client to GitHub Packages
         working-directory: angular-client
         run: npm publish
