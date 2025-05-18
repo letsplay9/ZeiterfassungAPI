@@ -90,7 +90,7 @@ jobs:
           registry-url: 'https://npm.pkg.github.com'
           scope: '@letsplay9'
           always-auth: true
-          auth-token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Remove private flag from package.json
         working-directory: angular-client
