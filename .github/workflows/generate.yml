@@ -95,6 +95,16 @@ jobs:
           echo "@letsplay9:registry=https://npm.pkg.github.com/" > .npmrc
           echo "//npm.pkg.github.com/:_authToken=${{ secrets.NPM_TOKEN }}" >> .npmrc
 
+      - name: Debug npm configuration
+        working-directory: angular-client
+        run: |
+          echo "== package.json =="
+          cat package.json
+          echo "== npm config list =="
+          npm config list
+          echo "== npm whoami =="
+          npm whoami --registry https://npm.pkg.github.com || true
+
       - name: Remove private flag from package.json
         working-directory: angular-client
         run: sed -i '/"private"/d' package.json
