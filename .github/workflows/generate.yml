@@ -17,10 +17,10 @@ jobs:
         run: npm install @openapitools/openapi-generator-cli -g
       - name: Generate Quarkus server and Angular client
         run: |
-          # Determine OpenAPI spec file
-          if [ -f openapi.yml ]; then SPEC=openapi.yml; \
-          elif [ -f openapi.yaml ]; then SPEC=openapi.yaml; \
-          else echo "Spec file not found"; exit 1; fi
+          # Determine OpenAPI spec file in openapi/ directory
+          if [ -f openapi/openapi.yml ]; then SPEC=openapi/openapi.yml; \
+          elif [ -f openapi/openapi.yaml ]; then SPEC=openapi/openapi.yaml; \
+          else echo "Spec file not found in openapi/ directory"; exit 1; fi
           echo "Using spec file: $SPEC"
           openapi-generator-cli generate -i "$SPEC" -g java --library quarkus -o quarkus-server
           openapi-generator-cli generate -i "$SPEC" -g typescript-angular -o angular-client
