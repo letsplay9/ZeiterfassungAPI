@@ -83,14 +83,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Node.js for npm publish
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
           registry-url: 'https://npm.pkg.github.com'
-          scope: '@letsplay9'
-          always-auth: true
-          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure npm authentication
+        run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" > ~/.npmrc
 
       - name: Remove private flag from package.json
         working-directory: angular-client
