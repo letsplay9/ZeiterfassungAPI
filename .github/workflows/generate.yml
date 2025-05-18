@@ -87,10 +87,13 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-          registry-url: 'https://npm.pkg.github.com'
 
-      - name: Configure npm authentication
-        run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" > ~/.npmrc
+      - name: Configure npm for GitHub Packages
+        working-directory: angular-client
+        run: |
+          # Set registry for the package scope and authenticate
+          echo "@letsplay9:registry=https://npm.pkg.github.com/" > .npmrc
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.NPM_TOKEN }}" >> .npmrc
 
       - name: Remove private flag from package.json
         working-directory: angular-client
