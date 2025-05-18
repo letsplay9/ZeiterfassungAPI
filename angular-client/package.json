@@ -1,5 +1,5 @@
 {
-  "name": "angular-client",
+  "name": "@letsplay9/angular-client",
   "version": "1.0.0",
   "private": true,
   "scripts": {

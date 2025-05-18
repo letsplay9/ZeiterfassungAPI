@@ -1,52 +1,48 @@
-# .github/workflows/generate.yml
-name: Generate API Stubs & Clients
-
+name: Publish API to GitHub Packages
 on:
   push:
-    paths:
-      - 'main'
-      - 'openapi/**'
-      - 'quarkus-server/**'
-      - 'angular-client/**'
-
+    branches:
+      - main
 jobs:
   generate:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v3
-        with:
-          persist-credentials: true
-
-      - name: Set up JDK 17
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Generate Quarkus server and Angular client
+        run: |
+          openapi-generator-cli generate -i openapi.yml -g java --library quarkus -o quarkus-server
+          openapi-generator-cli generate -i openapi.yml -g typescript-angular -o angular-client
+  publish-java:
+    needs: generate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Setup Java
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
+          distribution: temurin
           java-version: '17'
-
-      - name: Generate Quarkus Server Stub
+          server-id: github
+          server-username: ${{ github.actor }}
+          server-password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Deploy Quarkus server to GitHub Packages
         working-directory: quarkus-server
-        run: mvn clean compile
-
-      - name: Set up Node.js
+        run: mvn deploy -DskipTests
+  publish-node:
+    needs: generate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-
-      - name: Install Angular Client Dependencies
+          registry-url: 'https://npm.pkg.github.com'
+      - name: Configure npm auth
+        run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" > ~/.npmrc
+      - name: Publish Angular client to GitHub Packages
         working-directory: angular-client
-        run: npm install
-
-      - name: Generate Angular API Client
-        working-directory: angular-client
-        run: npm run generate:api
-
-      - name: Commit changes
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email 'github-actions[bot]@users.noreply.github.com'
-          # Hier anpassen:
-          git add quarkus-server/target/generated-sources/openapi
-          git add angular-client/src/app/api
-          git diff --quiet || git commit -m 'ci: regenerate API from OpenAPI spec'
-          git push
+        run: npm publish
