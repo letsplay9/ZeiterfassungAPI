@@ -109,6 +109,10 @@ jobs:
         working-directory: angular-client
         run: sed -i '/"private"/d' package.json
 
+      - name: Bump package version
+        working-directory: angular-client
+        run: npm version patch --no-git-tag-version
+
       - name: Publish Angular client to GitHub Packages
         working-directory: angular-client
         run: npm publish --access public
