@@ -22,7 +22,8 @@ jobs:
           elif [ -f openapi/openapi.yaml ]; then SPEC=openapi/openapi.yaml; \
           else echo "Spec file not found in openapi/ directory"; exit 1; fi
           echo "Using spec file: $SPEC"
-          openapi-generator-cli generate -i "$SPEC" -g java --library quarkus -o quarkus-server
+          # Use the dedicated Java Quarkus generator
+          openapi-generator-cli generate -i "$SPEC" -g java-quarkus -o quarkus-server
           openapi-generator-cli generate -i "$SPEC" -g typescript-angular -o angular-client
   publish-java:
     needs: generate
