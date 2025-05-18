@@ -92,6 +92,10 @@ jobs:
       - name: Configure npm authentication
         run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" > ~/.npmrc
 
+      - name: Remove private flag from package.json
+        working-directory: angular-client
+        run: sed -i '/"private"/d' package.json
+
       - name: Publish Angular client to GitHub Packages
         working-directory: angular-client
-        run: npm publish
+        run: npm publish --access public
