@@ -113,7 +113,7 @@ jobs:
         working-directory: angular-client
         run: |
           echo "@letsplay9:registry=https://npm.pkg.github.com/" > .npmrc
-          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> .npmrc
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.NPM_TOKEN }}" >> .npmrc
           echo "always-auth=true" >> .npmrc
 
       - name: Debug npm configuration
@@ -147,4 +147,4 @@ jobs:
           git commit -m "chore: bump version after publish"
           git push
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.NPM_TOKEN }}
