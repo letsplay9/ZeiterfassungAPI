@@ -1,5 +1,9 @@
 {
   "name": "@letsplay9/angular-client",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/letsplay9/ZeiterfassungAPI"
+  },
   "version": "1.0.0",
   "private": true,
   "scripts": {
