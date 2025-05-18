@@ -7,6 +7,7 @@ on:
       - 'openapi/**'
       - 'quarkus-server/**'
       - 'angular-client/**'
+  workflow_dispatch:
 jobs:
   generate:
     runs-on: ubuntu-latest
