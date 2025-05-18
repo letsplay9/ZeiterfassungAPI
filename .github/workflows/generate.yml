@@ -1,4 +1,7 @@
 name: Publish API to GitHub Packages
+permissions:
+  contents: read
+  packages: write
 on:
   push:
     branches:
@@ -55,6 +58,19 @@ jobs:
           server-id: github
           server-username: ${{ github.actor }}
           server-password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Maven settings for GitHub Packages
+        run: |
+          mkdir -p $HOME/.m2
+          echo "<settings xmlns=\"http://maven.apache.org/SETTINGS/1.0.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd\">" > $HOME/.m2/settings.xml
+          echo "  <servers>" >> $HOME/.m2/settings.xml
+          echo "    <server>" >> $HOME/.m2/settings.xml
+          echo "      <id>github</id>" >> $HOME/.m2/settings.xml
+          echo "      <username>${{ github.actor }}</username>" >> $HOME/.m2/settings.xml
+          echo "      <password>${{ secrets.GITHUB_TOKEN }}</password>" >> $HOME/.m2/settings.xml
+          echo "    </server>" >> $HOME/.m2/settings.xml
+          echo "  </servers>" >> $HOME/.m2/settings.xml
+          echo "</settings>" >> $HOME/.m2/settings.xml
 
       - name: Deploy Quarkus server to GitHub Packages
         working-directory: quarkus-server
