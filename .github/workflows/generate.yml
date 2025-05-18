@@ -39,13 +39,13 @@ jobs:
         run: npm run generate:api
 
       - name: Upload Quarkus artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: quarkus-server
           path: quarkus-server/target
 
       - name: Upload Angular client
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: angular-client
           path: angular-client
@@ -58,7 +58,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Download Quarkus artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: quarkus-server
           path: quarkus-server
@@ -105,7 +105,7 @@ jobs:
           persist-credentials: true
 
       - name: Download Angular client
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: angular-client
           path: angular-client
